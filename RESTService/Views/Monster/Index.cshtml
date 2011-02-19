@@ -1,0 +1,115 @@
+﻿@{
+    View.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Monster REST Web Service</h2>
+
+<script type="text/javascript" src="../../Scripts/MicrosoftAjax.js"></script>
+<script type="text/javascript" src="../../Scripts/jquery-1.4.1.min.js"></script>
+<script type="text/javascript" src="../../Scripts/JSON2.js"></script>
+
+<script type="text/javascript" >
+
+    // Make jQuery AJAX call to MVC action method.
+    function callActionMethod(url, verb, params, contentType, htmlField) {
+        // add timestamp to prevent caching requests
+        url = url + "?timeStamp=" + new Date().toTimeString();
+
+        $.ajax(
+        {
+            url: url,
+            type: verb,
+            data: params,
+            contentType: contentType,
+            success: function (data) {
+                printResult(data, htmlField);
+            }
+        });
+    }
+
+    // Helper method to make jQuery AJAX call to MVC action method (JSON).
+    function callActionMethodJson(url, verb, params, htmlField) {
+        callActionMethod(url, verb, JSON.stringify(params), 'application/json; charset=utf-8', htmlField);
+    }
+
+    // Helper method to make jQuery AJAX call to MVC action method (XML).
+    function callActionMethodXml(url, verb, params, htmlField) {
+        callActionMethod(url, verb, params, 'text/xml', htmlField);
+    }
+
+    // Display result of action method (JSON or XML).
+    function printResult(data, htmlField) {
+        var message = '';
+
+        if (data.xml == null || data.xml.length == 0) {
+            // JSON response
+            message = JSON.stringify(data);
+        }
+        else {
+            // XML response
+            message = data.xml;
+        }
+
+        $get(htmlField).innerText = message;
+        $get(htmlField).textContent = message;
+    }
+
+    function createMonster() {
+        var monster =
+        {
+            MonsterName: 'aMonsterName',
+            Age: 10,
+            Description: 'Something scary!'
+        };
+
+        return monster;
+    }
+
+    function updateMonster() {
+        var monster =
+        {
+            MonsterName: 'Jackraw',
+            Age: 99,
+            Description: 'A small, stubby, woodland creature with sharp claws. [updated]'
+        };
+
+        return monster;
+    }
+
+    function createMonsterXml() {
+        var monster = "<Monster><MonsterName>AnotherMonsterName</MonsterName><Age>22</Age><Description>Another scary thing!</Description></Monster>";
+        return monster;
+    }
+
+    function updateMonsterXml() {
+        var monster = "<Monster><MonsterName>Shredwraith</MonsterName><Age>99</Age><Description>A ghostly apparition with a menacing stare. [updated]</Description></Monster>";
+        return monster;
+    }
+</script>
+
+<h2>API</h2>
+<p>/API/Monster/{Name}</p>
+<p>[GET] Returns a single monster by name</p>
+<input type="button" value="JSON" onclick="callActionMethodJson('/API/Monster/Jackraw', 'GET', null, 'ReadResult')" />
+<input type="button" value="XML" onclick="callActionMethodXml('/API/Monster/Shredwraith', 'GET', null, 'ReadResult')" />
+<pre id="ReadResult"></pre>
+<hr />
+
+<p>[POST] Creates a new monster</p>
+<input type="button" value="JSON" onclick="callActionMethodJson('/API/Monster', 'POST', createMonster(), 'InsertResult')" />
+<input type="button" value="XML" onclick="callActionMethodXml('/API/Monster', 'POST', createMonsterXml(), 'InsertResult')" />
+<pre id="InsertResult"></pre>
+<hr />
+
+<p>[PUT] Updates a monster</p>
+<input type="button" value="JSON" onclick="callActionMethodJson('/API/Monster/Jackraw', 'PUT', updateMonster(), 'UpdateResult')" />
+<input type="button" value="XML" onclick="callActionMethodXml('/API/Monster/Shredwraith', 'PUT', updateMonsterXml(), 'UpdateResult')" />
+<pre id="UpdateResult"></pre>
+<hr />
+
+<p>[DELETE] Deletes a monster</p>
+<input type="button" value="JSON" onclick="callActionMethodJson('/API/Monster/Jackraw', 'DELETE', null, 'DeleteResult')" />
+<input type="button" value="XML" onclick="callActionMethodXml('/API/Monster/Shredwraith', 'DELETE', null, 'DeleteResult')" />
+<pre id="DeleteResult"></pre>
+<hr />
